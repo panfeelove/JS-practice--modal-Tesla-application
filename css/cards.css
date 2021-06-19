@@ -1,0 +1,44 @@
+.card-wrapper{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    margin: 10px;
+    width: 400px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform .4s ease-in-out;
+}
+
+.card:hover{
+    transform: scale(1.1);
+}
+.card-img-top {
+    width: 100%;
+    height: 70%;
+}
+.card-body {
+
+}
+.card-title {
+    margin-top: 20px;
+    font-size: 1.5rem;
+}
+.card-text {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+
+}
+.card-btn {
+
+
+}
+
+

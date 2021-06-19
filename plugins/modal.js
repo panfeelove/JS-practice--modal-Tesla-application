@@ -1,35 +1,52 @@
-function _createModal(options){
-    let title = options.title;
-    const closable = options.closable;
-    let closeBtn = '';
-    if(closable){
-        closeBtn = '<span class="modal-close">&times;</span>'
+Element.prototype.appendAfter = function(element){
+    element.parentNode.insertBefore(this, element.nextSibling);
+};
+
+function noop(){
+
+}
+
+function _createFotterButtons(buttons = []){
+    if(buttons.length === 0){
+        return document.createElement('div');
     }
-    let content = options.content;
-    let width = options.width;
+
+    const wrap = document.createElement('div');
+    wrap.classList.add('modal-footer')
+    buttons.forEach(btn=>{
+        const $btn = document.createElement('button');
+        $btn.textContent = btn.text;
+        $btn.classList.add(`btn-${btn.style || 'secondary'}`);
+        $btn.onclick = btn.handler || noop;
+        wrap.appendChild($btn);
+    })
+    return wrap;
+}
+
+function _createModal(options){
+    const DEFAULT_WIDTH = '600px';
 
     const modal = document.createElement('div');
     modal.classList.add('__modal');
     modal.insertAdjacentHTML('afterbegin',`
-        <div class="modal-overlay">
-            <div class="modal-window">
+        <div class="modal-overlay" data-close="true">
+            <div class="modal-window" style="width:${options.width || DEFAULT_WIDTH}">
                 <div class="modal-header">
                     <span class="modal-title">
-                        ${title}
+                        ${options.title||'Title'}
                     </span>
-                    ${closeBtn}
+                    ${options.closable ? '<span class="modal-close" data-close="true">&times;</span>' : ''}
                 </div>
-                <div class="modal-body">
-                    ${content}
+                <div class="modal-body" data-content>
+                    ${options.content || 'Content'}
                 </div>
-                <div class="modal-footer">
-                    <button><strong>Ok</strong></button>
-                    <button><strong>Cancel</strong></button>
-                </div>
+                
             </div>
         </div>   
     `);
-    modal.querySelector('.modal-window').style.width = width;
+
+    const footer = _createFotterButtons(options.footerButtons);
+    footer.appendAfter(modal.querySelector('[data-content]'));
     document.body.appendChild(modal);
 
     return modal
@@ -39,9 +56,12 @@ $.modal = function(options){
     const $modal = _createModal(options);
     const ANIMATION_SPEED = 200;
     let closing = false;
-
-    return{
+    let destroyed = false;
+    const modal = {
         open(){
+            if(destroyed){
+                console.error('Modal is destoyed');
+            }
             if(!closing){
                 $modal.classList.add('open')
                 
@@ -55,9 +75,25 @@ $.modal = function(options){
                 $modal.classList.remove('hide');
                 closing=false;
             },ANIMATION_SPEED)
-        },
-        destroy(){
-            $modal.remove();
         }
     }
+
+    const listener = event =>{
+        if('clicked',event.target.dataset.close){
+            modal.close();
+        }
+    }
+    $modal.addEventListener('click', listener)
+
+    return Object.assign(modal,{
+        destroy(){
+            $modal.parentNode.removeChild($modal);
+            $modal.removeEventListener('click',listener);
+            destroyed = true;
+        },
+        setContent(html){
+            $modal.querySelector('[data-content]').innerHTML = html;
+        }
+    });
+     
 }

@@ -6,17 +6,18 @@ function noop(){
 
 }
 
-function _createFotterButtons(buttons = []){
+function _createFotterButtons(buttons = [], elementName){
     if(buttons.length === 0){
         return document.createElement('div');
     }
 
     const wrap = document.createElement('div');
-    wrap.classList.add('modal-footer')
+    wrap.classList.add(`${elementName}-footer`)
     buttons.forEach(btn=>{
         const $btn = document.createElement('button');
         $btn.textContent = btn.text;
         $btn.classList.add(`btn-${btn.style || 'secondary'}`);
+        $btn.classList.add('btn');
         $btn.onclick = btn.handler || noop;
         wrap.appendChild($btn);
     })
@@ -45,7 +46,7 @@ function _createModal(options){
         </div>   
     `);
 
-    const footer = _createFotterButtons(options.footerButtons);
+    const footer = _createFotterButtons(options.footerButtons,'modal');
     footer.appendAfter(modal.querySelector('[data-content]'));
     document.body.appendChild(modal);
 
@@ -64,7 +65,9 @@ $.modal = function(options){
             }
             if(!closing){
                 $modal.classList.add('open')
-                
+                if(typeof options.onOpen === 'function'){
+                    options.onOpen();
+                }
             }
         },
         close(){
@@ -73,7 +76,11 @@ $.modal = function(options){
             setTimeout(()=>{
                 $modal.classList.remove('open');
                 $modal.classList.remove('hide');
+
                 closing=false;
+                if(typeof options.onClose === 'function'){
+                    options.onClose();
+                }
             },ANIMATION_SPEED)
         }
     }

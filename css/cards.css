@@ -9,7 +9,7 @@
     margin: 10px;
     width: 400px;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #eee;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -36,8 +36,12 @@
     margin-bottom: 20px;
 
 }
-.card-btn {
 
+.card .btn{
+    margin-right: 10px;
+}
+.card-btn {
+    
 
 }
 
